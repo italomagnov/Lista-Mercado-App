@@ -1,10 +1,8 @@
 'use client';
 
-import { LinkCustom } from '@/components/LinkCustom';
 import { IconHomePage } from '@/components/IconHomePage';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
-import { ButtonCustom } from '@/components/ButtonCustom';
 import { ChevronRightIcon } from '@radix-ui/react-icons';
 
 export default function Home() {

@@ -9,7 +9,7 @@ const config: Config = {
     theme: {
         extend: {
             backgroundImage: {
-                loginWalpaper: "url('../assets/WallpaperLogin.png')",
+                loginWalpaper: "url('../assets/wallpaperLogin.png')",
             },
             keyframes: {
                 overlayShow: {
