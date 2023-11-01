@@ -22,16 +22,17 @@ import { z } from 'zod';
 // React Hook Form
 import { FormProvider, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useFetch } from '../api/useFetch';
 
 type AvatarIcons = {
-    id: number;
     urlImage: string;
+    id: number;
     name: string;
     description: string;
 };
 
 const userSchema = z.object({
-    avatar: z.string(),
+    avatarUrl: z.string(),
     name: z.string(),
     username: z.string(),
     email: z.string(),
@@ -51,13 +52,17 @@ export default function CadastroPage() {
     });
 
     const {
+        reset,
         formState: { errors },
     } = createUserForm;
 
     useEffect(() => {
         async function getData() {
             const res = await fetch(
-                'https://my-json-server.typicode.com/italomagnov/profile-icons/profileIcons'
+                'https://my-json-server.typicode.com/italomagnov/profile-icons/profileIcons',
+                {
+                    cache: 'force-cache',
+                }
             );
             const data: AvatarIcons[] = await res.json();
 
@@ -66,14 +71,17 @@ export default function CadastroPage() {
         getData();
     }, []);
 
-    async function createUser(data: CreateUserData) {
+    const { POST } = useFetch('users');
+    function createUser(data: CreateUserData) {
         let user = {
-            avatar: iconAvatar.urlImage,
+            avatarUrl: iconAvatar.urlImage,
             name: data.name,
             username: data.username,
             email: data.email,
             password: data.password,
         };
+
+        POST(user);
     }
 
     function toggleSelectIconAvatar() {

@@ -3,13 +3,49 @@
 import { ButtonCustom } from '@/components/ButtonCustom';
 import { Form } from '@/components/Form';
 import { GoogleIcon } from '@/components/GoogleIcon';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
 import { FormProvider, useForm } from 'react-hook-form';
 
+import z from 'zod';
+
+type userLogin = {
+    username: string;
+    password: string;
+};
+
+const userLoginSchema = z.object({
+    username: z.string(),
+    password: z.string(),
+});
+
+type CreateUserLoginSchema = z.infer<typeof userLoginSchema>;
+
 interface LoginPageProps {}
+
 export default function LoginPage(props: LoginPageProps) {
     const methods = useForm();
+
+    const createLoginForm = useForm<CreateUserLoginSchema>({
+        resolver: zodResolver(userLoginSchema),
+    });
+
+    const {
+        formState: { errors },
+    } = createLoginForm;
+
+    async function handleLoginApp(data: CreateUserLoginSchema) {
+        const loginUser = await fetch('/api/login', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data),
+        });
+
+        return loginUser;
+    }
 
     return (
         <main className="w-full flex min-h-screen flex-col items-end justify-end bg-loginWalpaper bg-cover">
@@ -20,10 +56,9 @@ export default function LoginPage(props: LoginPageProps) {
                     </h2>
                     <FormProvider {...methods}>
                         <form
-                            onSubmit={methods.handleSubmit((data) =>
-                                console.log(data)
+                            onSubmit={methods.handleSubmit(
+                                handleLoginApp as any
                             )}
-                            action=""
                             className="w-full flex flex-col gap-8"
                         >
                             <div className="flex flex-col gap-2">
@@ -33,7 +68,8 @@ export default function LoginPage(props: LoginPageProps) {
                                     className="py-4 px-2 rounded-2xl bg-emerald-50 outline-emerald-500"
                                     type="text"
                                     autoComplete="username"
-                                    placeholder="usuário"
+                                    placeholder="Digite o seu usuário"
+                                    required
                                 />
                                 <Form.Label>Senha</Form.Label>
                                 <Form.Input
@@ -41,10 +77,14 @@ export default function LoginPage(props: LoginPageProps) {
                                     className="py-4 px-2 rounded-2xl bg-emerald-50 outline-emerald-500"
                                     type="password"
                                     autoComplete="current-password"
-                                    placeholder="senha"
+                                    placeholder="Digite a sua senha"
+                                    required
                                 />
                             </div>
-                            <ButtonCustom buttontypecolor="primary">
+                            <ButtonCustom
+                                type="submit"
+                                buttontypecolor="primary"
+                            >
                                 ENTRAR
                             </ButtonCustom>
                             <div className="flex items-center gap-4">
